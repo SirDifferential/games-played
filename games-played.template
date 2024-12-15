@@ -10,7 +10,7 @@
 		<div>
 			<h1>Games played</h1>
 			<p>This is a list of games I have played / remember playing. The finished date is often an approximate as I tend to mark down finished games after a long delay. Some games are completed, others I stopped playing after deciding I had seen enough.</p>
-		</div>
+            <p>Source code for this tool is available <a href="https://github.com/SirDifferential/games-played">on github</a>.</p>
 		<div class="table-wrap">
 			<table class="sortable">
 				<thead>
@@ -63,6 +63,9 @@
 					REPLACE_TABLE_DATA
 				</tbody>
 			</table>
+		</div>
+		<div>
+			<p>Source code for this tool is available <a href="https://github.com/SirDifferential/games-played">on github</a></p>
 		</div>
     </body>
 </html>
