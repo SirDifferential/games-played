@@ -41,7 +41,7 @@ template = fin.read()
 fin.close()
 
 # Write generated HTML with data
-htmldata = template.replace("REPLACE_TABLE_DATA", gameDataStr)
+htmldata = template.replace("REPLACE_TABLE_DATA", gameDataStr).replace("REPLACE_GAME_COUNT", str(len(gameData)))
 fout = open("games-played.html", "w")
 fout.write(htmldata)
 fout.close()
