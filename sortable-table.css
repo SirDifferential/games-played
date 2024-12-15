@@ -77,6 +77,10 @@ table.sortable tbody tr:nth-child(odd) {
   background-color: #ddd;
 }
 
+table.sortable tbody tr.GOTY {
+  background-color: #f9c74f;
+}
+
 /* Focus and hover styling */
 
 table.sortable th button:focus,
