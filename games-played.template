@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Games played</title>
+		<link href="sortable-table.css" rel="stylesheet">
+		<script type="text/javascript" src="sortable-table.js"></script>
+    </head>
+    <body>
+		<div>
+			<h1>Games played</h1>
+			<p>This is a list of games I have played / remember playing. The finished date is often an approximate as I tend to mark down finished games after a long delay. Some games are completed, others I stopped playing after deciding I had seen enough.</p>
+		</div>
+		<div class="table-wrap">
+			<table class="sortable">
+				<thead>
+					<tr>
+					<th>
+						<button>
+							Game
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					<th aria-sort="descending">
+						<button>
+							Finished
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					<th>
+						<button>
+							Genre
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					<th>
+						<button>
+							Platform
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					<th>
+						<button>
+							Released
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					<th>
+						<button>
+							Service
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					<th class="no-sort">
+						<button>
+							Review
+							<span aria-hidden="true"></span>
+						</button>
+					</th>
+					</tr>
+				</thead>
+				<tbody>
+					REPLACE_TABLE_DATA
+				</tbody>
+			</table>
+		</div>
+    </body>
+</html>
+
