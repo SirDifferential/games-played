@@ -4,6 +4,7 @@
         <meta charset="utf-8" />
         <title>Games played</title>
 		<link href="sortable-table.css" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
 		<script type="text/javascript" src="sortable-table.js"></script>
     </head>
     <body>
@@ -12,7 +13,7 @@
 			<p>This is a list of games I have played / remember playing.</p>
 			<p>There are <b>REPLACE_GAME_COUNT</b> games on this list.</p>
 			<p>The finished date is often an approximate as I tend to mark down finished games after a long delay. Some games are completed, others I stopped playing after deciding I had seen enough.</p>
-			<p>Games I consider some of the best games of all time are marked in gold.</p>
+			<p>Games I consider some of the best games of all time are marked in <span class="gold">gold</span>.</p>
             <p>Source code for this tool is available <a href="https://github.com/SirDifferential/games-played">on github</a>.</p>
 		<div class="table-wrap">
 			<table class="sortable">
