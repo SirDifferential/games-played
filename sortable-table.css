@@ -102,3 +102,7 @@ table.sortable th:not([aria-sort]) button:hover span::after {
   font-size: 100%;
   top: 0;
 }
+
+.hidden {
+  display: none;
+}

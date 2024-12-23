@@ -9,6 +9,8 @@
 
 'use strict';
 
+var filterGold = false;
+
 class SortableTable {
   constructor(tableNode) {
     this.tableNode = tableNode;
@@ -158,10 +160,38 @@ class SortableTable {
   }
 }
 
-// Initialize sortable table buttons
-window.addEventListener('load', function () {
+function createSortableTable() {
   var sortableTables = document.querySelectorAll('table.sortable');
   for (var i = 0; i < sortableTables.length; i++) {
     new SortableTable(sortableTables[i]);
   }
+}
+
+// Initialize sortable table buttons
+window.addEventListener('load', function () {
+
+  createSortableTable();
+
+  const table = document.getElementById('gameTable');
+  var filterButton = document.getElementById("filter-gold");
+  filterButton.addEventListener("click", function() {
+    filterGold = !filterGold;
+    console.log("filter gold:", filterGold);
+    if (filterGold) {
+      filterButton.textContent = "Show all"
+    } else {
+      filterButton.textContent = "Show only gold"
+    }
+
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      if (filterGold) {
+        if (!row.classList.contains('GOTY')) {
+          row.classList.add('hidden');
+        }
+      } else {
+       row.classList.remove('hidden');
+      }
+    });
+  });
 });
