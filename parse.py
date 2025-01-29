@@ -3,19 +3,24 @@ import csv
 import sys
 
 def entryToTableRow(entry):
-	out = ""
-	if entry["GOTY"] != None:
-		out = "<tr class=\"GOTY\">"
-	else:
-		out = "<tr>"
-	out += "<td>" + entry["Game"] + "</td>"
-	out += "<td>" + entry["Finished"].strftime("%Y-%m-%d") + "</td>"
-	out += "<td>" + entry["Genre"] + "</td>"
-	out += "<td>" + entry["Platform"] + "</td>"
-	out += "<td>" + entry["Release date"] + "</td>"
-	out += "<td>" + entry["Service"] + "</td>"
-	out += "<td>" + entry["Review"].replace("\\n", "<br>").replace("\\'", '"') + "</td>"
-	out += "</tr>\n"
+	try:
+		out = ""
+		if entry["GOTY"] != None:
+			out = "<tr class=\"GOTY\">"
+		else:
+			out = "<tr>"
+		out += "<td>" + entry["Game"] + "</td>"
+		out += "<td>" + entry["Finished"].strftime("%Y-%m-%d") + "</td>"
+		out += "<td>" + entry["Genre"] + "</td>"
+		out += "<td>" + entry["Platform"] + "</td>"
+		out += "<td>" + entry["Release date"] + "</td>"
+		out += "<td>" + entry["Service"] + "</td>"
+		out += "<td>" + entry["Review"].replace("\\n", "<br>").replace("\\'", '"') + "</td>"
+		out += "</tr>\n"
+	except Exception as e:
+		print(e)
+		print(entry)
+		sys.exit(1)
 	return out
 
 # Read game data from CSV

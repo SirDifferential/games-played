@@ -15,6 +15,7 @@
 			<p>The finished date is often an approximate as I tend to mark down finished games after a long delay. Some games are completed, others I stopped playing after deciding I had seen enough.</p>
 			<p>Games I consider some of the best games of all time are marked in <span class="gold">gold</span>.</p>
             <p>Source code for this tool is available <a href="https://github.com/SirDifferential/games-played">on github</a>.</p>
+            <p>I also write novels at <a href="https://farstrider.fi">Farstrider</a>.</p>
 		</div>
 		<div id ="controls">
 			<button id="filter-gold">Show only gold</>
