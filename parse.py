@@ -30,10 +30,17 @@ fin.close()
 
 reader = csv.DictReader(data, quotechar='"')
 gameData = []
-for row in reader:
-	# Parse date to programmable time
-	row["Finished"] = parser.parse(row["Finished"])
-	gameData.append(row)
+row = ""
+
+try:
+	for row in reader:
+		# Parse date to programmable time
+		row["Finished"] = parser.parse(row["Finished"])
+		gameData.append(row)
+except Exception as e:
+	print(e)
+	print(row)
+	sys.exit(1)
 
 gameData.sort(key=lambda x: x["Finished"], reverse=True)
 gameDataStr = ""
