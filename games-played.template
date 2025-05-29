@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="sortable-table.js"></script>
     </head>
     <body>
+	<div class="centered">
 		<div>
 			<h1>Games played</h1>
 			<p>This is a list of games I have played / remember playing.</p>
@@ -18,7 +19,7 @@
             <p>I also write novels at <a href="https://farstrider.fi">Farstrider</a>.</p>
 		</div>
 		<div id ="controls">
-			<button id="filter-gold">Show only gold</>
+			<button id="filter-gold">Show only gold</button>
 		</div>
 		<div class="table-wrap">
 			<table class="sortable" id="gameTable">
@@ -73,6 +74,7 @@
 				</tbody>
 			</table>
 		</div>
+	</div>
     </body>
 </html>
 
