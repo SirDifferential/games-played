@@ -13,6 +13,10 @@ def entryToTableRow(entry):
 		out += "<td>" + entry["Finished"].strftime("%Y-%m-%d") + "</td>"
 		out += "<td>" + entry["Genre"] + "</td>"
 		out += "<td>" + entry["Platform"] + "</td>"
+
+		# Sanity check
+		int(entry["Release date"])
+
 		out += "<td>" + entry["Release date"] + "</td>"
 		out += "<td>" + entry["Service"] + "</td>"
 		out += "<td>" + entry["Review"].replace("\\n", "<br>").replace("\\'", '"') + "</td>"
