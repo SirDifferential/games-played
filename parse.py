@@ -1,4 +1,4 @@
-from dateutil import parser
+from datetime import datetime
 import csv
 import sys
 
@@ -39,7 +39,7 @@ row = ""
 try:
 	for row in reader:
 		# Parse date to programmable time
-		row["Finished"] = parser.parse(row["Finished"])
+		row["Finished"] = datetime.strptime(row["Finished"], "%d.%m.%Y")
 		gameData.append(row)
 except Exception as e:
 	print(e)
