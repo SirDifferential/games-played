@@ -106,3 +106,8 @@ table.sortable th:not([aria-sort]) button:hover span::after {
 .hidden {
   display: none;
 }
+
+table.sortable tbody tr.hidden {
+  display: table-row;
+  visibility: collapse;
+}
