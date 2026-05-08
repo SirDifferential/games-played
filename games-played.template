@@ -55,12 +55,6 @@
 							<span aria-hidden="true"></span>
 						</button>
 					</th>
-					<th>
-						<button>
-							Service
-							<span aria-hidden="true"></span>
-						</button>
-					</th>
 					<th class="no-sort">
 						<button>
 							Review

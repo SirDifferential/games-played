@@ -18,7 +18,7 @@ def entryToTableRow(entry):
 		int(entry["Release date"])
 
 		out += "<td>" + entry["Release date"] + "</td>"
-		out += "<td>" + entry["Service"] + "</td>"
+		#out += "<td>" + entry["Service"] + "</td>"
 		out += "<td>" + entry["Review"].replace("\\n", "<br>").replace("\\'", '"') + "</td>"
 		out += "</tr>\n"
 	except Exception as e:
