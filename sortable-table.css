@@ -3,10 +3,15 @@
   top: -30em;
 }
 
+table.sortable {
+  table-layout: fixed;
+  width: 100%;
+}
+
 table.sortable td,
 table.sortable th {
   padding: 0.125em 0.25em;
-  width: 8em;
+  width: auto;
 }
 
 table.sortable th {
@@ -19,8 +24,34 @@ table.sortable th.no-sort {
   padding-top: 0.35em;
 }
 
-table.sortable th:nth-child(5) {
-  width: 10em;
+table.sortable th:nth-child(1),
+table.sortable td:nth-child(1) {
+  width: 13%;
+}
+
+table.sortable th:nth-child(2),
+table.sortable td:nth-child(2) {
+  width: 8%;
+}
+
+table.sortable th:nth-child(3),
+table.sortable td:nth-child(3) {
+  width: 11%;
+}
+
+table.sortable th:nth-child(4),
+table.sortable td:nth-child(4) {
+  width: 8%;
+}
+
+table.sortable th:nth-child(5),
+table.sortable td:nth-child(5) {
+  width: 7%;
+}
+
+table.sortable th:nth-child(6),
+table.sortable td:nth-child(6) {
+  width: 53%;
 }
 
 table.sortable th button {
@@ -36,7 +67,7 @@ table.sortable th button {
   top: 0;
   bottom: 0;
   width: 100%;
-  text-align: left;
+  text-align: center;
   outline: none;
   cursor: pointer;
 }
