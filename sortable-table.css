@@ -27,26 +27,31 @@ table.sortable th.no-sort {
 table.sortable th:nth-child(1),
 table.sortable td:nth-child(1) {
   width: 13%;
+  text-align: center;
 }
 
 table.sortable th:nth-child(2),
 table.sortable td:nth-child(2) {
   width: 8%;
+  text-align: center;
 }
 
 table.sortable th:nth-child(3),
 table.sortable td:nth-child(3) {
   width: 11%;
+  text-align: center;
 }
 
 table.sortable th:nth-child(4),
 table.sortable td:nth-child(4) {
   width: 8%;
+  text-align: center;
 }
 
 table.sortable th:nth-child(5),
 table.sortable td:nth-child(5) {
   width: 7%;
+  text-align: center;
 }
 
 table.sortable th:nth-child(6),
