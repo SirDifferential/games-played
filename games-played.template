@@ -17,7 +17,7 @@
 			<p>Some games are completed, others I stopped playing after deciding I had seen enough.</p>
 			<p>Games I consider some of the best games of all time are marked in <span class="gold">gold</span>.</p>
             <p>Source code for this tool is available <a href="https://github.com/SirDifferential/games-played">on github</a>.</p>
-            <p>If you are interested in my fantasy novels, they are on <a href="https://jessekaukonen.net">my website</a>.</p>
+            <p>If you are interested in the other things I do, they are on <a href="https://jessekaukonen.net">my main website</a>.</p>
 		</div>
 		<div id ="controls">
 			<button id="filter-gold">Show only gold</button>
