@@ -78,6 +78,10 @@
 	min-width: 50rem;
 }
 
+.played-year-chart {
+	min-width: 50rem;
+}
+
 .platform-chart {
 	min-width: 36rem;
 }
@@ -95,20 +99,32 @@
 	fill: #3a6698;
 }
 
-.release-year-chart .bar-base {
+.release-year-chart .bar-base,
+.played-year-chart .bar-base {
 	fill: #4f81bd;
 }
 
-.release-year-chart .bar-base:hover {
+.release-year-chart .bar-base:hover,
+.played-year-chart .bar-base:hover {
 	fill: #3a6698;
 }
 
-.release-year-chart .bar-gold {
+.release-year-chart .bar-gold,
+.played-year-chart .bar-gold {
 	fill: #f9c74f;
 }
 
-.release-year-chart .bar-gold:hover {
+.release-year-chart .bar-gold:hover,
+.played-year-chart .bar-gold:hover {
 	fill: #e6b63a;
+}
+
+.played-year-chart .bar-adjusted {
+	fill: #7a59a7;
+}
+
+.played-year-chart .bar-adjusted:hover {
+	fill: #664690;
 }
 
 .bar-chart text {

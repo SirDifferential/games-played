@@ -106,22 +106,32 @@ def buildBarChart(dataPoints, className, ariaLabel, labelEvery=1):
 	return out
 
 
-def releaseYearChart(gameData):
+def buildYearChart(gameData, yearExtractor, chartClassName, labelPrefix, noDataMessage, displayCountOverrides=None):
 	totalCounts = Counter()
 	goldCounts = Counter()
 	for entry in gameData:
-		year = int(entry['Release date'])
+		year = yearExtractor(entry)
 		totalCounts[year] += 1
 		if isGoldEntry(entry):
 			goldCounts[year] += 1
 
 	if len(totalCounts) == 0:
-		return '<p>No release-year data available.</p>'
+		return '<p>' + noDataMessage + '</p>'
 
 	startYear = min(totalCounts.keys())
 	endYear = datetime.now().year
 	years = list(range(startYear, endYear + 1))
-	totals = [totalCounts.get(year, 0) for year in years]
+
+	if displayCountOverrides is None:
+		displayCountOverrides = {}
+
+	displayCounts = {}
+	for year in years:
+		realCount = totalCounts.get(year, 0)
+		displayCount = displayCountOverrides.get(year, realCount)
+		displayCounts[year] = max(0, displayCount)
+
+	totals = [displayCounts[year] for year in years]
 	maxCount = max(totals)
 	if maxCount == 0:
 		maxCount = 1
@@ -139,26 +149,33 @@ def releaseYearChart(gameData):
 	svgHeight = topPad + plotHeight + bottomPad
 
 	out = ''
-	out += '<svg class="bar-chart release-year-chart" viewBox="0 0 ' + str(svgWidth) + ' ' + str(svgHeight) + '" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Games by release year from ' + str(startYear) + ' to ' + str(endYear) + '">\n'
+	out += '<svg class="bar-chart ' + chartClassName + '" viewBox="0 0 ' + str(svgWidth) + ' ' + str(svgHeight) + '" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Games by ' + labelPrefix + ' from ' + str(startYear) + ' to ' + str(endYear) + '">\n'
 	out += '<line class="axis" x1="' + str(leftPad) + '" y1="' + str(topPad) + '" x2="' + str(leftPad) + '" y2="' + str(topPad + plotHeight) + '"/>\n'
 	out += '<line class="axis" x1="' + str(leftPad) + '" y1="' + str(topPad + plotHeight) + '" x2="' + str(leftPad + plotWidth) + '" y2="' + str(topPad + plotHeight) + '"/>\n'
 	out += '<text x="' + str(leftPad - 6) + '" y="' + str(topPad + 4) + '" text-anchor="end">' + str(maxCount) + '</text>\n'
 	out += '<text x="' + str(leftPad - 6) + '" y="' + str(topPad + plotHeight + 4) + '" text-anchor="end">0</text>\n'
 
 	for index, year in enumerate(years):
-		totalCount = totalCounts.get(year, 0)
+		realCount = totalCounts.get(year, 0)
+		displayCount = displayCounts[year]
 		goldCount = goldCounts.get(year, 0)
 		totalBarHeight = 0
-		if totalCount > 0:
-			totalBarHeight = max(1, int((totalCount / maxCount) * plotHeight))
+		if displayCount > 0:
+			totalBarHeight = max(1, int((displayCount / maxCount) * plotHeight))
 
 		x = leftPad + index * (barWidth + barGap)
 		barTop = topPad + plotHeight - totalBarHeight
 
 		gamesLabel = 'game'
-		if totalCount != 1:
+		if realCount != 1:
 			gamesLabel = 'games'
-		tooltip = str(year) + ': ' + str(totalCount) + ' ' + gamesLabel + ', ' + str(goldCount) + ' gold'
+		tooltip = str(year) + ': ' + str(realCount) + ' ' + gamesLabel + ', ' + str(goldCount) + ' gold'
+		if displayCount != realCount:
+			tooltip += ' (rendered as ' + str(displayCount) + ')'
+
+		adjustedClass = ''
+		if displayCount != realCount:
+			adjustedClass = ' bar-adjusted'
 
 		goldBarHeight = 0
 		if goldCount > 0 and totalBarHeight > 0:
@@ -170,10 +187,10 @@ def releaseYearChart(gameData):
 
 		if nonGoldBarHeight > 0:
 			nonGoldY = barTop + goldBarHeight
-			out += '<rect class="bar bar-base" x="' + str(x) + '" y="' + str(nonGoldY) + '" width="' + str(barWidth) + '" height="' + str(nonGoldBarHeight) + '" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
+			out += '<rect class="bar bar-base' + adjustedClass + '" x="' + str(x) + '" y="' + str(nonGoldY) + '" width="' + str(barWidth) + '" height="' + str(nonGoldBarHeight) + '" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
 
 		if goldBarHeight > 0:
-			out += '<rect class="bar bar-gold" x="' + str(x) + '" y="' + str(barTop) + '" width="' + str(barWidth) + '" height="' + str(goldBarHeight) + '" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
+			out += '<rect class="bar bar-gold' + adjustedClass + '" x="' + str(x) + '" y="' + str(barTop) + '" width="' + str(barWidth) + '" height="' + str(goldBarHeight) + '" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
 
 		if index == 0 or year == endYear or year % 5 == 0:
 			labelX = x + (barWidth / 2)
@@ -182,6 +199,27 @@ def releaseYearChart(gameData):
 
 	out += '</svg>'
 	return out
+
+
+def releaseYearChart(gameData):
+	return buildYearChart(
+		gameData,
+		lambda entry: int(entry['Release date']),
+		'release-year-chart',
+		'release year',
+		'No release-year data available.'
+	)
+
+
+def playedYearChart(gameData):
+	return buildYearChart(
+		gameData,
+		lambda entry: entry['Finished'].year,
+		'played-year-chart',
+		'played year',
+		'No played-year data available.',
+		{1995: 40}
+	)
 
 
 def platformChart(gameData):
@@ -241,6 +279,7 @@ fout.close()
 platformRows = statisticsRows(countByPlatform(gameData))
 genreRows = statisticsRows(countByGenre(gameData))
 releaseYearChartSvg = releaseYearChart(gameData)
+playedYearChartSvg = playedYearChart(gameData)
 
 fin = open('statistics.template', 'r')
 statisticsTemplate = fin.read()
@@ -250,6 +289,7 @@ statisticsHtml = (
 	statisticsTemplate
 	.replace('REPLACE_PLATFORM_ROWS', platformRows)
 	.replace('REPLACE_RELEASE_YEAR_CHART', releaseYearChartSvg)
+	.replace('REPLACE_PLAYED_YEAR_CHART', playedYearChartSvg)
 	.replace('REPLACE_GENRE_ROWS', genreRows)
 )
 
