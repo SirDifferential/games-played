@@ -103,7 +103,7 @@ def buildStorePalette(gameData):
 	for index, store in enumerate(selectedStores):
 		colors[store] = palette[index % len(palette)]
 
-	return selectedStores, colors, None
+	return selectedStores, colors
 
 
 def buildPlatformPalette(gameData, maxPlatforms=8):
@@ -137,11 +137,6 @@ def buildPlatformPalette(gameData, maxPlatforms=8):
 	return selectedPlatforms, colors
 
 
-def genreColor(index):
-	hue = (index * 137) % 360
-	return 'hsl(' + str(hue) + ', 62%, 52%)'
-
-
 def buildGenrePalette(gameData):
 	genreCounts = Counter()
 	for entry in gameData:
@@ -152,7 +147,8 @@ def buildGenrePalette(gameData):
 	colors = {}
 
 	for index, genre in enumerate(order):
-		colors[genre] = genreColor(index)
+		hue = (index * 137) % 360
+		colors[genre] = 'hsl(' + str(hue) + ', 62%, 52%)'
 
 	return order, colors
 
@@ -509,84 +505,6 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 	return out
 
 
-def yearExtractorForOrder(orderMode):
-	if orderMode == 'release':
-		return lambda entry: int(entry['Release date'])
-	return lambda entry: entry['Finished'].year
-
-
-def yearDisplayOverrides(orderMode):
-	if orderMode == 'played':
-		return {1995: 40}
-	return None
-
-
-def yearlyGoldChart(gameData, orderMode):
-	labelPrefix = orderMode + ' year'
-	return buildGoldYearChart(
-		gameData,
-		yearExtractorForOrder(orderMode),
-		'year-chart',
-		labelPrefix,
-		'No ' + labelPrefix + ' data available.',
-		yearDisplayOverrides(orderMode)
-	)
-
-
-def yearlySystemsChart(gameData, orderMode, platformOrder, platformColors, platformBarLogos):
-	labelPrefix = orderMode + ' year'
-	return buildStackedYearChart(
-		gameData,
-		yearExtractorForOrder(orderMode),
-		lambda entry: normalizePlatform(entry['Platform']),
-		platformOrder,
-		platformColors,
-		'year-chart',
-		labelPrefix,
-		'No ' + labelPrefix + ' data available.',
-		yearDisplayOverrides(orderMode),
-		'Other',
-		platformBarLogos,
-		'systems-' + orderMode
-	)
-
-
-def yearlyGenresChart(gameData, orderMode, genreOrder, genreColors):
-	labelPrefix = orderMode + ' year'
-	return buildStackedYearChart(
-		gameData,
-		yearExtractorForOrder(orderMode),
-		lambda entry: normalizeGenre(entry['Genre']),
-		genreOrder,
-		genreColors,
-		'year-chart',
-		labelPrefix,
-		'No ' + labelPrefix + ' data available.',
-		yearDisplayOverrides(orderMode),
-		None,
-		None,
-		'genres-' + orderMode
-	)
-
-
-def yearlyStoreChart(gameData, orderMode, storeOrder, storeColors, otherBucketLabel, storeBarLogos):
-	labelPrefix = orderMode + ' year'
-	return buildStackedYearChart(
-		gameData,
-		yearExtractorForOrder(orderMode),
-		lambda entry: normalizeStore(entry.get('Service')),
-		storeOrder,
-		storeColors,
-		'year-chart',
-		labelPrefix,
-		'No ' + labelPrefix + ' data available.',
-		yearDisplayOverrides(orderMode),
-		otherBucketLabel,
-		storeBarLogos,
-		'store-' + orderMode
-	)
-
-
 def buildYearlyChartSwitcher(chartsByOrderAndMode, systemsLegend, storeLegend):
 	out = ''
 	out += '<div class="year-chart-switchers">'
@@ -783,25 +701,71 @@ genreRows = statisticsRows(countByGenre(gameData))
 platformOrder, platformColors = buildPlatformPalette(gameData)
 platformBarLogos, platformLegendImages = platformLogoAssets(platformOrder)
 platformLegend = buildLegend(platformOrder, platformColors, 'Platform colors', platformLegendImages)
-storeOrder, storeColors, storeOtherBucketLabel = buildStorePalette(gameData)
+storeOrder, storeColors = buildStorePalette(gameData)
 storeBarLogos, storeLegendImages = storeLogoAssets(storeOrder)
 storeLegend = buildLegend(storeOrder, storeColors, 'Store colors', storeLegendImages)
 genreOrder, genreColors = buildGenrePalette(gameData)
 
-chartsByOrderAndMode = {
-	'release': {
-		'gold': yearlyGoldChart(gameData, 'release'),
-		'systems': yearlySystemsChart(gameData, 'release', platformOrder, platformColors, platformBarLogos),
-		'store': yearlyStoreChart(gameData, 'release', storeOrder, storeColors, storeOtherBucketLabel, storeBarLogos),
-		'genres': yearlyGenresChart(gameData, 'release', genreOrder, genreColors)
-	},
-	'played': {
-		'gold': yearlyGoldChart(gameData, 'played'),
-		'systems': yearlySystemsChart(gameData, 'played', platformOrder, platformColors, platformBarLogos),
-		'store': yearlyStoreChart(gameData, 'played', storeOrder, storeColors, storeOtherBucketLabel, storeBarLogos),
-		'genres': yearlyGenresChart(gameData, 'played', genreOrder, genreColors)
+chartsByOrderAndMode = {}
+for orderMode, yearExtractor, displayOverrides in [
+	('release', lambda entry: int(entry['Release date']), None),
+	('played', lambda entry: entry['Finished'].year, {1995: 40})
+]:
+	labelPrefix = orderMode + ' year'
+	noDataMessage = 'No ' + labelPrefix + ' data available.'
+
+	chartsByOrderAndMode[orderMode] = {
+		'gold': buildGoldYearChart(
+			gameData,
+			yearExtractor,
+			'year-chart',
+			labelPrefix,
+			noDataMessage,
+			displayOverrides
+		),
+		'systems': buildStackedYearChart(
+			gameData,
+			yearExtractor,
+			lambda entry: normalizePlatform(entry['Platform']),
+			platformOrder,
+			platformColors,
+			'year-chart',
+			labelPrefix,
+			noDataMessage,
+			displayOverrides,
+			'Other',
+			platformBarLogos,
+			'systems-' + orderMode
+		),
+		'store': buildStackedYearChart(
+			gameData,
+			yearExtractor,
+			lambda entry: normalizeStore(entry.get('Service')),
+			storeOrder,
+			storeColors,
+			'year-chart',
+			labelPrefix,
+			noDataMessage,
+			displayOverrides,
+			None,
+			storeBarLogos,
+			'store-' + orderMode
+		),
+		'genres': buildStackedYearChart(
+			gameData,
+			yearExtractor,
+			lambda entry: normalizeGenre(entry['Genre']),
+			genreOrder,
+			genreColors,
+			'year-chart',
+			labelPrefix,
+			noDataMessage,
+			displayOverrides,
+			None,
+			None,
+			'genres-' + orderMode
+		)
 	}
-}
 yearlyChartSwitcher = buildYearlyChartSwitcher(chartsByOrderAndMode, platformLegend, storeLegend)
 playedGenreHeatmap = playedYearGenreHeatmap(gameData)
 
