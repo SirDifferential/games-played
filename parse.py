@@ -391,66 +391,87 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 	return out
 
 
-def releaseYearChart(gameData):
+def yearExtractorForOrder(orderMode):
+	if orderMode == 'release':
+		return lambda entry: int(entry['Release date'])
+	return lambda entry: entry['Finished'].year
+
+
+def yearDisplayOverrides(orderMode):
+	if orderMode == 'played':
+		return {1995: 40}
+	return None
+
+
+def yearlyGoldChart(gameData, orderMode):
+	labelPrefix = orderMode + ' year'
 	return buildGoldYearChart(
 		gameData,
-		lambda entry: int(entry['Release date']),
-		'release-year-chart',
-		'release year',
-		'No release-year data available.'
+		yearExtractorForOrder(orderMode),
+		'year-chart',
+		labelPrefix,
+		'No ' + labelPrefix + ' data available.',
+		yearDisplayOverrides(orderMode)
 	)
 
 
-def playedYearGoldChart(gameData):
-	return buildGoldYearChart(
-		gameData,
-		lambda entry: entry['Finished'].year,
-		'played-year-chart',
-		'played year',
-		'No played-year data available.',
-		{1995: 40}
-	)
-
-
-def playedYearSystemsChart(gameData, platformOrder, platformColors):
+def yearlySystemsChart(gameData, orderMode, platformOrder, platformColors):
+	labelPrefix = orderMode + ' year'
 	return buildStackedYearChart(
 		gameData,
-		lambda entry: entry['Finished'].year,
+		yearExtractorForOrder(orderMode),
 		lambda entry: normalizePlatform(entry['Platform']),
 		platformOrder,
 		platformColors,
-		'played-year-chart',
-		'played year',
-		'No played-year data available.',
-		{1995: 40},
+		'year-chart',
+		labelPrefix,
+		'No ' + labelPrefix + ' data available.',
+		yearDisplayOverrides(orderMode),
 		'Other'
 	)
 
 
-def playedYearGenresChart(gameData, genreOrder, genreColors):
+def yearlyGenresChart(gameData, orderMode, genreOrder, genreColors):
+	labelPrefix = orderMode + ' year'
 	return buildStackedYearChart(
 		gameData,
-		lambda entry: entry['Finished'].year,
+		yearExtractorForOrder(orderMode),
 		lambda entry: normalizeGenre(entry['Genre']),
 		genreOrder,
 		genreColors,
-		'played-year-chart',
-		'played year',
-		'No played-year data available.',
-		{1995: 40}
+		'year-chart',
+		labelPrefix,
+		'No ' + labelPrefix + ' data available.',
+		yearDisplayOverrides(orderMode)
 	)
 
 
-def buildPlayedYearSwitcher(goldSvg, systemsSvg, genresSvg, systemsLegend):
+def buildYearlyChartSwitcher(chartsByOrderAndMode, systemsLegend):
 	out = ''
-	out += '<div class="played-year-switcher" role="tablist" aria-label="Played year visualization mode">'
-	out += '<button class="chart-mode-button active" type="button" data-played-view-button="gold" aria-pressed="true">Games + Gold</button>'
-	out += '<button class="chart-mode-button" type="button" data-played-view-button="systems" aria-pressed="false">Systems</button>'
-	out += '<button class="chart-mode-button" type="button" data-played-view-button="genres" aria-pressed="false">Genres</button>'
+	out += '<div class="year-chart-switchers">'
+	out += '<div class="played-year-switcher" role="tablist" aria-label="Year ordering">'
+	out += '<button class="chart-mode-button active" type="button" data-year-order-button="release" aria-pressed="true">By release year</button>'
+	out += '<button class="chart-mode-button" type="button" data-year-order-button="played" aria-pressed="false">By played year</button>'
 	out += '</div>'
-	out += '<div class="played-year-view" data-played-view="gold">' + goldSvg + '</div>'
-	out += '<div class="played-year-view chart-view-hidden" data-played-view="systems">' + systemsLegend + systemsSvg + '</div>'
-	out += '<div class="played-year-view chart-view-hidden" data-played-view="genres">' + genresSvg + '</div>'
+	out += '<div class="played-year-switcher" role="tablist" aria-label="Year subdivision">'
+	out += '<button class="chart-mode-button active" type="button" data-year-mode-button="gold" aria-pressed="true">Games + Gold</button>'
+	out += '<button class="chart-mode-button" type="button" data-year-mode-button="systems" aria-pressed="false">Systems</button>'
+	out += '<button class="chart-mode-button" type="button" data-year-mode-button="genres" aria-pressed="false">Genres</button>'
+	out += '</div>'
+	out += '</div>'
+
+	for orderMode in ['release', 'played']:
+		for subdivisionMode in ['gold', 'systems', 'genres']:
+			chartContent = chartsByOrderAndMode[orderMode][subdivisionMode]
+			if subdivisionMode == 'systems':
+				chartContent = systemsLegend + chartContent
+
+			classes = 'yearly-view chart-view-hidden'
+			if orderMode == 'release' and subdivisionMode == 'gold':
+				classes = 'yearly-view'
+
+			out += '<div class="' + classes + '" data-year-order="' + orderMode + '" data-year-mode="' + subdivisionMode + '">' + chartContent + '</div>'
+
 	return out
 
 
@@ -503,11 +524,19 @@ platformOrder, platformColors = buildPlatformPalette(gameData)
 platformLegend = buildLegend(platformOrder, platformColors, 'Platform colors')
 genreOrder, genreColors = buildGenrePalette(gameData)
 
-releaseYearChartSvg = releaseYearChart(gameData)
-playedYearGoldSvg = playedYearGoldChart(gameData)
-playedYearSystemsSvg = playedYearSystemsChart(gameData, platformOrder, platformColors)
-playedYearGenresSvg = playedYearGenresChart(gameData, genreOrder, genreColors)
-playedYearSwitcher = buildPlayedYearSwitcher(playedYearGoldSvg, playedYearSystemsSvg, playedYearGenresSvg, platformLegend)
+chartsByOrderAndMode = {
+	'release': {
+		'gold': yearlyGoldChart(gameData, 'release'),
+		'systems': yearlySystemsChart(gameData, 'release', platformOrder, platformColors),
+		'genres': yearlyGenresChart(gameData, 'release', genreOrder, genreColors)
+	},
+	'played': {
+		'gold': yearlyGoldChart(gameData, 'played'),
+		'systems': yearlySystemsChart(gameData, 'played', platformOrder, platformColors),
+		'genres': yearlyGenresChart(gameData, 'played', genreOrder, genreColors)
+	}
+}
+yearlyChartSwitcher = buildYearlyChartSwitcher(chartsByOrderAndMode, platformLegend)
 
 fin = open('statistics.template', 'r')
 statisticsTemplate = fin.read()
@@ -516,8 +545,7 @@ fin.close()
 statisticsHtml = (
 	statisticsTemplate
 	.replace('REPLACE_PLATFORM_ROWS', platformRows)
-	.replace('REPLACE_RELEASE_YEAR_CHART', releaseYearChartSvg)
-	.replace('REPLACE_PLAYED_YEAR_DYNAMIC', playedYearSwitcher)
+	.replace('REPLACE_YEARLY_DYNAMIC', yearlyChartSwitcher)
 	.replace('REPLACE_GENRE_ROWS', genreRows)
 )
 

@@ -74,6 +74,10 @@
 	margin-bottom: 0.6rem;
 }
 
+.year-chart-switchers {
+	margin-bottom: 0.35rem;
+}
+
 .chart-mode-button {
 	font: inherit;
 	padding: 0.2rem 0.55rem;

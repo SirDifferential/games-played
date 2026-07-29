@@ -110,33 +110,57 @@ window.addEventListener('load', function () {
     clearPinnedTooltip();
   });
 
-  var viewButtons = document.querySelectorAll('[data-played-view-button]');
-  var views = document.querySelectorAll('[data-played-view]');
+  var orderButtons = document.querySelectorAll('[data-year-order-button]');
+  var modeButtons = document.querySelectorAll('[data-year-mode-button]');
+  var yearlyViews = document.querySelectorAll('[data-year-order][data-year-mode]');
+  var activeOrder = 'release';
+  var activeMode = 'gold';
 
-  function activatePlayedView(viewName) {
-    clearPinnedTooltip();
-
-    for (var buttonIndex = 0; buttonIndex < viewButtons.length; buttonIndex++) {
-      var button = viewButtons[buttonIndex];
-      var isActiveButton = button.getAttribute('data-played-view-button') === viewName;
+  function setButtonStates(buttons, attributeName, activeValue) {
+    for (var buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
+      var button = buttons[buttonIndex];
+      var isActiveButton = button.getAttribute(attributeName) === activeValue;
       button.classList.toggle('active', isActiveButton);
       button.setAttribute('aria-pressed', isActiveButton ? 'true' : 'false');
     }
+  }
 
-    for (var viewIndex = 0; viewIndex < views.length; viewIndex++) {
-      var view = views[viewIndex];
-      var isActiveView = view.getAttribute('data-played-view') === viewName;
-      view.classList.toggle('chart-view-hidden', !isActiveView);
+  function activateYearlyView(orderMode, subdivisionMode) {
+    activeOrder = orderMode;
+    activeMode = subdivisionMode;
+    clearPinnedTooltip();
+
+    setButtonStates(orderButtons, 'data-year-order-button', activeOrder);
+    setButtonStates(modeButtons, 'data-year-mode-button', activeMode);
+
+    for (var viewIndex = 0; viewIndex < yearlyViews.length; viewIndex++) {
+      var yearlyView = yearlyViews[viewIndex];
+      var viewOrder = yearlyView.getAttribute('data-year-order');
+      var viewMode = yearlyView.getAttribute('data-year-mode');
+      var isActiveView = viewOrder === activeOrder && viewMode === activeMode;
+      yearlyView.classList.toggle('chart-view-hidden', !isActiveView);
     }
   }
 
-  for (var buttonIndex = 0; buttonIndex < viewButtons.length; buttonIndex++) {
-    viewButtons[buttonIndex].addEventListener('click', function (event) {
-      var viewName = event.currentTarget.getAttribute('data-played-view-button');
-      if (!viewName) {
+  for (var orderIndex = 0; orderIndex < orderButtons.length; orderIndex++) {
+    orderButtons[orderIndex].addEventListener('click', function (event) {
+      var orderMode = event.currentTarget.getAttribute('data-year-order-button');
+      if (!orderMode) {
         return;
       }
-      activatePlayedView(viewName);
+      activateYearlyView(orderMode, activeMode);
     });
   }
+
+  for (var modeIndex = 0; modeIndex < modeButtons.length; modeIndex++) {
+    modeButtons[modeIndex].addEventListener('click', function (event) {
+      var subdivisionMode = event.currentTarget.getAttribute('data-year-mode-button');
+      if (!subdivisionMode) {
+        return;
+      }
+      activateYearlyView(activeOrder, subdivisionMode);
+    });
+  }
+
+  activateYearlyView(activeOrder, activeMode);
 });
