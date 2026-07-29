@@ -7,13 +7,13 @@
 		<script type="text/javascript" src="statistics.js"></script>
     </head>
     <body>
+		<div class="site-masthead">Games played</div>
 		<nav class="site-nav" aria-label="Primary">
 			<a class="site-nav-link" href="games-played.html">Games list</a>
 			<a class="site-nav-link site-nav-link-active" href="statistics.html" aria-current="page">Statistics</a>
 		</nav>
 		<div class="centered stats-page">
 		<div>
-			<h1>Game statistics</h1>
 			<p>Various statistics about the games I've played, because statistics are fun.</p>
 		</div>
 			<div class="table-wrap">
@@ -53,5 +53,6 @@
 			</table>
 		</div>
 	</div>
+	<footer class="site-footer">Games played list by <a href="https://jessekaukonen.net" target="_blank" rel="noopener noreferrer">Jesse Kaukonen</a> | <a href="https://github.com/SirDifferential/games-played" target="_blank" rel="noopener noreferrer">Source code on github</a></footer>
     </body>
 </html>
