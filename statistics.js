@@ -7,6 +7,75 @@ window.addEventListener('load', function () {
   document.body.appendChild(tooltip);
   var pinnedBar = null;
 
+  function clearPulses() {
+    var pulsingBars = document.querySelectorAll('.bar-pulse-match');
+    for (var pulseIndex = 0; pulseIndex < pulsingBars.length; pulseIndex++) {
+      pulsingBars[pulseIndex].classList.remove('bar-pulse-match');
+    }
+
+    var pulsingLogoTiles = document.querySelectorAll('.bar-logo-tiles-pulse');
+    for (var logoPulseIndex = 0; logoPulseIndex < pulsingLogoTiles.length; logoPulseIndex++) {
+      pulsingLogoTiles[logoPulseIndex].classList.remove('bar-logo-tiles-pulse');
+    }
+  }
+
+  function pulseMatchingSegments(barElement) {
+    var yearlyView = barElement.closest('.yearly-view[data-year-order][data-year-mode]');
+    if (!yearlyView) {
+      return;
+    }
+
+    var mode = yearlyView.getAttribute('data-year-mode');
+    if (mode !== 'store' && mode !== 'systems' && mode !== 'genres') {
+      return;
+    }
+
+    var segmentCategory = barElement.getAttribute('data-segment-category');
+    if (!segmentCategory) {
+      return;
+    }
+
+    clearPulses();
+
+    var matchingBars = [];
+    var barsInView = yearlyView.querySelectorAll('.bar[data-segment-category]');
+    for (var barIndex = 0; barIndex < barsInView.length; barIndex++) {
+      if (barsInView[barIndex].getAttribute('data-segment-category') === segmentCategory) {
+        matchingBars.push(barsInView[barIndex]);
+      }
+    }
+
+    var matchingLogoTiles = [];
+    var logoTilesInView = yearlyView.querySelectorAll('.bar-logo-tiles[data-segment-category]');
+    for (var logoIndex = 0; logoIndex < logoTilesInView.length; logoIndex++) {
+      if (logoTilesInView[logoIndex].getAttribute('data-segment-category') === segmentCategory) {
+        matchingLogoTiles.push(logoTilesInView[logoIndex]);
+      }
+    }
+
+    for (var matchingBarIndex = 0; matchingBarIndex < matchingBars.length; matchingBarIndex++) {
+      matchingBars[matchingBarIndex].classList.remove('bar-pulse-match');
+    }
+
+    for (var matchingLogoIndex = 0; matchingLogoIndex < matchingLogoTiles.length; matchingLogoIndex++) {
+      matchingLogoTiles[matchingLogoIndex].classList.remove('bar-logo-tiles-pulse');
+    }
+
+    if (matchingBars.length > 0) {
+      matchingBars[0].getBoundingClientRect();
+    } else if (matchingLogoTiles.length > 0) {
+      matchingLogoTiles[0].getBoundingClientRect();
+    }
+
+    for (var activeBarIndex = 0; activeBarIndex < matchingBars.length; activeBarIndex++) {
+      matchingBars[activeBarIndex].classList.add('bar-pulse-match');
+    }
+
+    for (var activeLogoIndex = 0; activeLogoIndex < matchingLogoTiles.length; activeLogoIndex++) {
+      matchingLogoTiles[activeLogoIndex].classList.add('bar-logo-tiles-pulse');
+    }
+  }
+
   function placeTooltip(x, y) {
     var padding = 8;
     var width = tooltip.offsetWidth;
@@ -69,6 +138,7 @@ window.addEventListener('load', function () {
 
   function togglePinnedTooltip(event) {
     event.preventDefault();
+    pulseMatchingSegments(event.currentTarget);
 
     if (pinnedBar === event.currentTarget) {
       clearPinnedTooltip();
@@ -129,6 +199,7 @@ window.addEventListener('load', function () {
     activeOrder = orderMode;
     activeMode = subdivisionMode;
     clearPinnedTooltip();
+    clearPulses();
 
     setButtonStates(orderButtons, 'data-year-order-button', activeOrder);
     setButtonStates(modeButtons, 'data-year-mode-button', activeMode);

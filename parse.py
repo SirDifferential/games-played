@@ -475,6 +475,7 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 			tooltip = str(year) + ' - ' + category + ': ' + str(categoryCount) + ' ' + gamesLabel + ' of ' + str(realCount)
 			if displayCount != realCount:
 				tooltip += ' (year rendered as ' + str(displayCount) + ')'
+			categoryAttr = escape(category, quote=True)
 
 			color = categoryColors.get(category, '#4f81bd')
 			logoPath = categoryLogoImages.get(category)
@@ -483,17 +484,17 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 				logoSegmentId += 1
 				defsOut += '<clipPath id="' + clipId + '"><rect x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2"></rect></clipPath>'
 
-				out += '<rect class="bar bar-segment bar-logo-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: #f4f5f7;" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
+				out += '<rect class="bar bar-segment bar-logo-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: #f4f5f7;" data-tooltip="' + escape(tooltip, quote=True) + '" data-segment-category="' + categoryAttr + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
 
 				tileSize = barWidth
 				tileY = segmentY
-				out += '<g clip-path="url(#' + clipId + ')" pointer-events="none">'
+				out += '<g class="bar-logo-tiles" clip-path="url(#' + clipId + ')" data-segment-category="' + categoryAttr + '" pointer-events="none">'
 				while tileY < segmentY + segmentHeight:
 					out += '<image href="' + escape(logoPath, quote=True) + '" x="' + str(x) + '" y="' + str(tileY) + '" width="' + str(barWidth) + '" height="' + str(tileSize) + '" preserveAspectRatio="xMidYMid meet"></image>'
 					tileY += tileSize
 				out += '</g>\n'
 			else:
-				out += '<rect class="bar bar-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: ' + color + ';" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
+				out += '<rect class="bar bar-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: ' + color + ';" data-tooltip="' + escape(tooltip, quote=True) + '" data-segment-category="' + categoryAttr + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
 			currentY = segmentY
 
 		if index == 0 or year == endYear or year % 5 == 0:

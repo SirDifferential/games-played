@@ -196,6 +196,33 @@
 	transform-origin: center bottom;
 }
 
+@keyframes chart-segment-pulse {
+	0% {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+	45% {
+		transform: translateY(-1px) scale(1.22);
+		opacity: 0.9;
+	}
+	100% {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+}
+
+.bar-chart .bar.bar-pulse-match {
+	animation: chart-segment-pulse 280ms ease-in-out 2;
+	transform-box: fill-box;
+	transform-origin: center bottom;
+}
+
+.bar-chart .bar-logo-tiles-pulse {
+	animation: chart-segment-pulse 280ms ease-in-out 2;
+	transform-box: fill-box;
+	transform-origin: center bottom;
+}
+
 .bar-chart .bar:focus {
 	outline: none;
 	stroke: #111;

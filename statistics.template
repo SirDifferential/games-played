@@ -16,7 +16,7 @@
 			<a class="nav-button" href="games-played.html">Back to main list</a>
 		</div>
 			<div class="table-wrap">
-				<h3>By year</h3>
+				<h3>Timeline</h3>
 				<p>When selecting "By played year", 1995 gets special handling because it's where I added old games with inaccurate dates.</p>
 				<div class="chart-wrap">
 					REPLACE_YEARLY_DYNAMIC
