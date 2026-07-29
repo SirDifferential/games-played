@@ -767,13 +767,13 @@ for entry in gameData:
 	gameDataStr += entryToTableRow(entry)
 
 # Read HTML template
-fin = open('games-played.template', 'r')
+fin = open('list.template', 'r')
 template = fin.read()
 fin.close()
 
 # Write generated HTML with data
 htmldata = template.replace('REPLACE_TABLE_DATA', gameDataStr).replace('REPLACE_GAME_COUNT', str(len(gameData)))
-fout = open('games-played.html', 'w')
+fout = open('list.html', 'w')
 fout.write(htmldata)
 fout.close()
 
