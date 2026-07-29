@@ -50,6 +50,13 @@ def normalizeGenre(value):
 	return genre
 
 
+def normalizeStore(value):
+	store = normalizeCategory(value)
+	if store == '':
+		return 'Unknown'
+	return store
+
+
 def isGoldEntry(entry):
 	value = entry.get('GOTY')
 	if value is None:
@@ -69,6 +76,40 @@ def countByGenre(gameData):
 	for entry in gameData:
 		counter[normalizeGenre(entry['Genre'])] += 1
 	return sorted(counter.items(), key=lambda x: (-x[1], x[0].lower()))
+
+
+def buildStorePalette(gameData, maxStores=8):
+	storeCounts = Counter()
+	for entry in gameData:
+		storeCounts[normalizeStore(entry.get('Service'))] += 1
+
+	sortedStores = sorted(storeCounts.items(), key=lambda x: (-x[1], x[0].lower()))
+	selectedStores = [name for name, _ in sortedStores[:maxStores]]
+	otherBucketLabel = 'Other'
+	if otherBucketLabel in storeCounts:
+		otherBucketLabel = 'Other (rest)'
+
+	if len(sortedStores) > maxStores:
+		selectedStores.append(otherBucketLabel)
+
+	palette = [
+		'#4f81bd',
+		'#f28e2b',
+		'#59a14f',
+		'#e15759',
+		'#af7aa1',
+		'#edc948',
+		'#76b7b2',
+		'#ff9da7',
+		'#9c755f',
+		'#bab0ab'
+	]
+
+	colors = {}
+	for index, store in enumerate(selectedStores):
+		colors[store] = palette[index % len(palette)]
+
+	return selectedStores, colors, otherBucketLabel
 
 
 def buildPlatformPalette(gameData, maxPlatforms=8):
@@ -122,18 +163,45 @@ def buildGenrePalette(gameData):
 	return order, colors
 
 
-def buildLegend(items, colorMap, ariaLabel):
+def buildLegend(items, colorMap, ariaLabel, imageMap=None):
 	if len(items) == 0:
 		return ''
 
+	if imageMap is None:
+		imageMap = {}
+
 	legendItems = []
 	for item in items:
-		color = colorMap[item]
-		swatch = '<span class="legend-swatch" style="background-color: ' + color + ';" aria-hidden="true"></span>'
+		if item in imageMap:
+			imagePath = imageMap[item]
+			swatch = '<span class="legend-swatch legend-swatch-image" aria-hidden="true"><img src="' + escape(imagePath, quote=True) + '" alt=""></span>'
+		else:
+			color = colorMap[item]
+			swatch = '<span class="legend-swatch" style="background-color: ' + color + ';" aria-hidden="true"></span>'
 		label = '<span class="legend-label">' + escape(item) + '</span>'
 		legendItems.append('<span class="legend-item">' + swatch + label + '</span>')
 
 	return '<div class="chart-legend" role="list" aria-label="' + escape(ariaLabel, quote=True) + '">' + ''.join(legendItems) + '</div>'
+
+
+def storeLogoAssets(storeOrder):
+	storeToLogo = {
+		'GOG': 'graphics/GOG.com_logo.svg',
+		'Steam': 'graphics/Steam_icon_logo.svg'
+	}
+
+	barLogos = {}
+	legendImages = {}
+
+	for store in storeOrder:
+		logoPath = storeToLogo.get(store)
+		if logoPath is None:
+			continue
+
+		barLogos[store] = logoPath
+		legendImages[store] = logoPath
+
+	return barLogos, legendImages
 
 
 def allocateSegmentHeights(order, counts, totalCount, totalHeight):
@@ -298,10 +366,13 @@ def buildGoldYearChart(gameData, yearExtractor, chartClassName, labelPrefix, noD
 	return out
 
 
-def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOrder, categoryColors, chartClassName, labelPrefix, noDataMessage, displayCountOverrides=None, otherBucket=None):
+def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOrder, categoryColors, chartClassName, labelPrefix, noDataMessage, displayCountOverrides=None, otherBucket=None, categoryLogoImages=None, clipIdPrefix='chart'):
 	totalCounts = Counter()
 	categoryCountsByYear = {}
 	selectedCategories = set(categoryOrder)
+
+	if categoryLogoImages is None:
+		categoryLogoImages = {}
 
 	for entry in gameData:
 		year = yearExtractor(entry)
@@ -345,6 +416,8 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 
 	out = ''
 	out += scaffold['svgOpen']
+	defsOut = ''
+	logoSegmentId = 0
 	out += '<line class="axis" x1="' + str(leftPad) + '" y1="' + str(topPad) + '" x2="' + str(leftPad) + '" y2="' + str(topPad + plotHeight) + '"/>\n'
 	out += '<line class="axis" x1="' + str(leftPad) + '" y1="' + str(topPad + plotHeight) + '" x2="' + str(leftPad + plotWidth) + '" y2="' + str(topPad + plotHeight) + '"/>\n'
 	out += '<text x="' + str(leftPad - 6) + '" y="' + str(topPad + 4) + '" text-anchor="end">' + str(maxCount) + '</text>\n'
@@ -379,13 +452,32 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 				tooltip += ' (year rendered as ' + str(displayCount) + ')'
 
 			color = categoryColors.get(category, '#4f81bd')
-			out += '<rect class="bar bar-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: ' + color + ';" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
+			logoPath = categoryLogoImages.get(category)
+			if logoPath is not None:
+				clipId = clipIdPrefix + '-logo-clip-' + str(logoSegmentId)
+				logoSegmentId += 1
+				defsOut += '<clipPath id="' + clipId + '"><rect x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2"></rect></clipPath>'
+
+				out += '<rect class="bar bar-segment bar-logo-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: #f4f5f7;" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
+
+				tileSize = barWidth
+				tileY = segmentY
+				out += '<g clip-path="url(#' + clipId + ')" pointer-events="none">'
+				while tileY < segmentY + segmentHeight:
+					out += '<image href="' + escape(logoPath, quote=True) + '" x="' + str(x) + '" y="' + str(tileY) + '" width="' + str(barWidth) + '" height="' + str(tileSize) + '" preserveAspectRatio="xMidYMid meet"></image>'
+					tileY += tileSize
+				out += '</g>\n'
+			else:
+				out += '<rect class="bar bar-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: ' + color + ';" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
 			currentY = segmentY
 
 		if index == 0 or year == endYear or year % 5 == 0:
 			labelX = x + (barWidth / 2)
 			labelY = topPad + plotHeight + 15
 			out += '<text x="' + str(labelX) + '" y="' + str(labelY) + '" text-anchor="start" transform="rotate(60 ' + str(labelX) + ' ' + str(labelY) + ')">' + str(year) + '</text>\n'
+
+	if defsOut != '':
+		out = out.replace(scaffold['svgOpen'], scaffold['svgOpen'] + '<defs>' + defsOut + '</defs>\n', 1)
 
 	out += '</svg>'
 	return out
@@ -427,7 +519,9 @@ def yearlySystemsChart(gameData, orderMode, platformOrder, platformColors):
 		labelPrefix,
 		'No ' + labelPrefix + ' data available.',
 		yearDisplayOverrides(orderMode),
-		'Other'
+		'Other',
+		None,
+		'systems-' + orderMode
 	)
 
 
@@ -442,11 +536,32 @@ def yearlyGenresChart(gameData, orderMode, genreOrder, genreColors):
 		'year-chart',
 		labelPrefix,
 		'No ' + labelPrefix + ' data available.',
-		yearDisplayOverrides(orderMode)
+		yearDisplayOverrides(orderMode),
+		None,
+		None,
+		'genres-' + orderMode
 	)
 
 
-def buildYearlyChartSwitcher(chartsByOrderAndMode, systemsLegend):
+def yearlyStoreChart(gameData, orderMode, storeOrder, storeColors, otherBucketLabel, storeBarLogos):
+	labelPrefix = orderMode + ' year'
+	return buildStackedYearChart(
+		gameData,
+		yearExtractorForOrder(orderMode),
+		lambda entry: normalizeStore(entry.get('Service')),
+		storeOrder,
+		storeColors,
+		'year-chart',
+		labelPrefix,
+		'No ' + labelPrefix + ' data available.',
+		yearDisplayOverrides(orderMode),
+		otherBucketLabel,
+		storeBarLogos,
+		'store-' + orderMode
+	)
+
+
+def buildYearlyChartSwitcher(chartsByOrderAndMode, systemsLegend, storeLegend):
 	out = ''
 	out += '<div class="year-chart-switchers">'
 	out += '<div class="played-year-switcher" role="tablist" aria-label="Year ordering">'
@@ -456,15 +571,18 @@ def buildYearlyChartSwitcher(chartsByOrderAndMode, systemsLegend):
 	out += '<div class="played-year-switcher" role="tablist" aria-label="Year subdivision">'
 	out += '<button class="chart-mode-button active" type="button" data-year-mode-button="gold" aria-pressed="true">Games + Gold</button>'
 	out += '<button class="chart-mode-button" type="button" data-year-mode-button="systems" aria-pressed="false">Systems</button>'
+	out += '<button class="chart-mode-button" type="button" data-year-mode-button="store" aria-pressed="false">Store</button>'
 	out += '<button class="chart-mode-button" type="button" data-year-mode-button="genres" aria-pressed="false">Genres</button>'
 	out += '</div>'
 	out += '</div>'
 
 	for orderMode in ['release', 'played']:
-		for subdivisionMode in ['gold', 'systems', 'genres']:
+		for subdivisionMode in ['gold', 'systems', 'store', 'genres']:
 			chartContent = chartsByOrderAndMode[orderMode][subdivisionMode]
 			if subdivisionMode == 'systems':
 				chartContent = systemsLegend + chartContent
+			if subdivisionMode == 'store':
+				chartContent = storeLegend + chartContent
 
 			classes = 'yearly-view chart-view-hidden'
 			if orderMode == 'release' and subdivisionMode == 'gold':
@@ -522,21 +640,26 @@ genreRows = statisticsRows(countByGenre(gameData))
 
 platformOrder, platformColors = buildPlatformPalette(gameData)
 platformLegend = buildLegend(platformOrder, platformColors, 'Platform colors')
+storeOrder, storeColors, storeOtherBucketLabel = buildStorePalette(gameData)
+storeBarLogos, storeLegendImages = storeLogoAssets(storeOrder)
+storeLegend = buildLegend(storeOrder, storeColors, 'Store colors', storeLegendImages)
 genreOrder, genreColors = buildGenrePalette(gameData)
 
 chartsByOrderAndMode = {
 	'release': {
 		'gold': yearlyGoldChart(gameData, 'release'),
 		'systems': yearlySystemsChart(gameData, 'release', platformOrder, platformColors),
+		'store': yearlyStoreChart(gameData, 'release', storeOrder, storeColors, storeOtherBucketLabel, storeBarLogos),
 		'genres': yearlyGenresChart(gameData, 'release', genreOrder, genreColors)
 	},
 	'played': {
 		'gold': yearlyGoldChart(gameData, 'played'),
 		'systems': yearlySystemsChart(gameData, 'played', platformOrder, platformColors),
+		'store': yearlyStoreChart(gameData, 'played', storeOrder, storeColors, storeOtherBucketLabel, storeBarLogos),
 		'genres': yearlyGenresChart(gameData, 'played', genreOrder, genreColors)
 	}
 }
-yearlyChartSwitcher = buildYearlyChartSwitcher(chartsByOrderAndMode, platformLegend)
+yearlyChartSwitcher = buildYearlyChartSwitcher(chartsByOrderAndMode, platformLegend, storeLegend)
 
 fin = open('statistics.template', 'r')
 statisticsTemplate = fin.read()

@@ -121,6 +121,18 @@
 	box-sizing: border-box;
 }
 
+.legend-swatch-image {
+	overflow: hidden;
+	background: #fff;
+}
+
+.legend-swatch-image img {
+	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: contain;
+}
+
 .bar-chart {
 	width: 100%;
 	height: auto;
