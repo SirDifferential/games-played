@@ -135,10 +135,17 @@ button:focus-visible,
 
 .page-actions {
 	display: flex;
+	justify-content: center;
 	gap: 0.5rem;
 	padding-left: 0.75rem;
 	padding-right: 0.75rem;
 	margin-bottom: 0.75rem;
+}
+
+#filter-gold {
+	font-size: 1.05rem;
+	padding: 0.45rem 0.9rem;
+	min-width: 9.8rem;
 }
 
 .site-footer {
