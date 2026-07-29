@@ -39,8 +39,8 @@
 }
 
 .stats-page {
-	max-width: none;
-	width: 100%;
+	max-width: 75vw;
+	width: 75vw;
 	box-sizing: border-box;
 }
 
@@ -67,23 +67,70 @@
 	margin-bottom: 0.75rem;
 }
 
+.played-year-switcher {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-bottom: 0.6rem;
+}
+
+.chart-mode-button {
+	font: inherit;
+	padding: 0.2rem 0.55rem;
+	border: 1px solid #666;
+	background: #efefef;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.chart-mode-button.active {
+	background: #d8e6f7;
+	border-color: #3a6698;
+}
+
+.chart-view-hidden {
+	display: none;
+}
+
+.chart-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem 0.75rem;
+	margin-bottom: 0.75rem;
+	font-size: 0.92rem;
+}
+
+.legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.legend-swatch {
+	display: inline-block;
+	width: 0.9rem;
+	height: 0.9rem;
+	border: 1px solid rgba(0, 0, 0, 0.35);
+	box-sizing: border-box;
+}
+
 .bar-chart {
 	width: 100%;
 	height: auto;
 	display: block;
-	min-width: 30rem;
+	min-width: 0;
 }
 
 .release-year-chart {
-	min-width: 50rem;
+	min-width: 0;
 }
 
 .played-year-chart {
-	min-width: 50rem;
+	min-width: 0;
 }
 
 .platform-chart {
-	min-width: 36rem;
+	min-width: 0;
 }
 
 .bar-chart .axis {
@@ -95,36 +142,39 @@
 	fill: #4f81bd;
 }
 
-.bar-chart .bar:hover {
+.bar-chart .bar:not(.bar-segment):hover {
 	fill: #3a6698;
 }
 
-.release-year-chart .bar-base,
-.played-year-chart .bar-base {
+.bar-chart .bar-base {
 	fill: #4f81bd;
 }
 
-.release-year-chart .bar-base:hover,
-.played-year-chart .bar-base:hover {
+.bar-chart .bar-base:hover {
 	fill: #3a6698;
 }
 
-.release-year-chart .bar-gold,
-.played-year-chart .bar-gold {
+.bar-chart .bar-gold {
 	fill: #f9c74f;
 }
 
-.release-year-chart .bar-gold:hover,
-.played-year-chart .bar-gold:hover {
+.bar-chart .bar-gold:hover {
 	fill: #e6b63a;
 }
 
-.played-year-chart .bar-adjusted {
-	fill: #7a59a7;
+.bar-chart .bar-segment {
+	stroke: rgba(0, 0, 0, 0.35);
+	stroke-width: 0.4;
 }
 
-.played-year-chart .bar-adjusted:hover {
-	fill: #664690;
+.bar-chart .bar-segment:hover {
+	opacity: 0.82;
+}
+
+.bar-chart .bar:focus {
+	outline: none;
+	stroke: #111;
+	stroke-width: 1.2;
 }
 
 .bar-chart text {
@@ -146,7 +196,8 @@
 	opacity: 0;
 	transform: translateY(2px);
 	transition: opacity 0.05s linear;
-	white-space: nowrap;
+	white-space: normal;
+	max-width: min(34rem, calc(100vw - 1rem));
 }
 
 .chart-tooltip.visible {

@@ -23,9 +23,10 @@
 				<h3>By played year</h3>
 				<p>1995 gets special handling because it's the year where I added all my old games which I don't have accurate dates on, and it would otherwise break the graph.</p>
 				<div class="chart-wrap">
-					REPLACE_PLAYED_YEAR_CHART
+					REPLACE_PLAYED_YEAR_DYNAMIC
 				</div>
-				<h3>By platform</h3>
+				<h3>Summary tables</h3>
+				<h4>By platform</h4>
 				<table class="stats-table">
 					<thead>
 						<tr>
@@ -37,7 +38,7 @@
 						REPLACE_PLATFORM_ROWS
 					</tbody>
 				</table>
-				<h3>By genre</h3>
+				<h4>By genre</h4>
 			<table class="stats-table">
 				<thead>
 					<tr>
