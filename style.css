@@ -65,6 +65,9 @@
 	width: 100%;
 	overflow-x: auto;
 	margin-bottom: 0.75rem;
+	padding: 0.45rem 0.55rem 0.35rem;
+	border-radius: 10px;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(242, 246, 251, 0.72));
 }
 
 .played-year-switcher {
@@ -138,12 +141,15 @@
 }
 
 .bar-chart .axis {
-	stroke: #222;
+	stroke: #4b5563;
 	stroke-width: 1;
+	stroke-linecap: round;
+	opacity: 0.65;
 }
 
 .bar-chart .bar {
 	fill: #4f81bd;
+	transition: fill 120ms ease, opacity 120ms ease, transform 120ms ease;
 }
 
 .bar-chart .bar:not(.bar-segment):hover {
@@ -173,6 +179,9 @@
 
 .bar-chart .bar-segment:hover {
 	opacity: 0.82;
+	transform: translateY(-0.5px);
+	transform-box: fill-box;
+	transform-origin: center bottom;
 }
 
 .bar-chart .bar:focus {

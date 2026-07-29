@@ -284,10 +284,10 @@ def buildGoldYearChart(gameData, yearExtractor, chartClassName, labelPrefix, noD
 
 		if nonGoldBarHeight > 0:
 			nonGoldY = barTop + goldBarHeight
-			out += '<rect class="bar bar-base' + adjustedClass + '" x="' + str(x) + '" y="' + str(nonGoldY) + '" width="' + str(barWidth) + '" height="' + str(nonGoldBarHeight) + '" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
+			out += '<rect class="bar bar-base' + adjustedClass + '" x="' + str(x) + '" y="' + str(nonGoldY) + '" width="' + str(barWidth) + '" height="' + str(nonGoldBarHeight) + '" rx="2" ry="2" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
 
 		if goldBarHeight > 0:
-			out += '<rect class="bar bar-gold' + adjustedClass + '" x="' + str(x) + '" y="' + str(barTop) + '" width="' + str(barWidth) + '" height="' + str(goldBarHeight) + '" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
+			out += '<rect class="bar bar-gold' + adjustedClass + '" x="' + str(x) + '" y="' + str(barTop) + '" width="' + str(barWidth) + '" height="' + str(goldBarHeight) + '" rx="2" ry="2" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '"></rect>\n'
 
 		if index == 0 or year == endYear or year % 5 == 0:
 			labelX = x + (barWidth / 2)
@@ -379,7 +379,7 @@ def buildStackedYearChart(gameData, yearExtractor, categoryExtractor, categoryOr
 				tooltip += ' (year rendered as ' + str(displayCount) + ')'
 
 			color = categoryColors.get(category, '#4f81bd')
-			out += '<rect class="bar bar-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" style="fill: ' + color + ';" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
+			out += '<rect class="bar bar-segment" x="' + str(x) + '" y="' + str(segmentY) + '" width="' + str(barWidth) + '" height="' + str(segmentHeight) + '" rx="2" ry="2" style="fill: ' + color + ';" data-tooltip="' + escape(tooltip, quote=True) + '" aria-label="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
 			currentY = segmentY
 
 		if index == 0 or year == endYear or year % 5 == 0:
