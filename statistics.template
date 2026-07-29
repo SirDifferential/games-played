@@ -7,13 +7,14 @@
 		<script type="text/javascript" src="statistics.js"></script>
     </head>
     <body>
+		<nav class="site-nav" aria-label="Primary">
+			<a class="site-nav-link" href="games-played.html">Games list</a>
+			<a class="site-nav-link site-nav-link-active" href="statistics.html" aria-current="page">Statistics</a>
+		</nav>
 		<div class="centered stats-page">
 		<div>
 			<h1>Game statistics</h1>
 			<p>Various statistics about the games I've played, because statistics are fun.</p>
-		</div>
-		<div id ="controls">
-			<a class="nav-button" href="games-played.html">Back to main list</a>
 		</div>
 			<div class="table-wrap">
 				<h3>Timeline</h3>

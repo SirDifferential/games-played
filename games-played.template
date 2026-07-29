@@ -8,8 +8,12 @@
 		<script type="text/javascript" src="sortable-table.js"></script>
     </head>
     <body>
-	<div class="centered">
-		<div>
+	<nav class="site-nav" aria-label="Primary">
+		<a class="site-nav-link site-nav-link-active" href="games-played.html" aria-current="page">Games list</a>
+		<a class="site-nav-link" href="statistics.html">Statistics</a>
+	</nav>
+	<div class="centered stats-page">
+		<div class="table-wrap">
 			<h1>Games played</h1>
 			<p>This is a list of games I have played / remember playing.</p>
 			<p>There are <b>REPLACE_GAME_COUNT</b> games on this list.</p>
@@ -26,9 +30,10 @@
 			<p>When it comes to <b>what I look for in games</b>, the common patterns are: World that feels alive without needing the player as a vehicle of agency (The Last Express), ability to experience the story and the world in many ways (Hollow Knight), no handholding (Dark Souls), no notifications or other interruptions to being immersed in the experience (Thief), and letting the player observe and understand (Outer Wilds). While the art style matters a lot to me, graphical fidely does not. I consider ambiance and atmosphere more important than story.</p>
 			<p>If you wish to recommend me games, please email me at jesse.kaukonen@gmail.com. I'm a patient gamer, so don't recommend me new releases.</p>
 		</div>
-		<div id ="controls">
+	</div>
+	<div class="centered">
+		<div class="page-actions">
 			<button id="filter-gold">Show only gold</button>
-			<a class="nav-button" href="statistics.html">Statistics</a>
 		</div>
 		<div class="table-wrap">
 			<table class="sortable" id="gameTable">
