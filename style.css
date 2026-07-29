@@ -10,3 +10,130 @@
 	padding-left: 0.75rem;
 	padding-right: 0.75rem;
 }
+
+#controls {
+	display: flex;
+	gap: 0.5rem;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.nav-button {
+	font: inherit;
+	display: inline-block;
+	padding: 0.15rem 0.5rem;
+	color: black;
+	background-color: buttonface;
+	border: 1px solid buttonborder;
+	border-radius: 2px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.stats-table {
+	border-collapse: collapse;
+	margin-bottom: 1rem;
+	width: 100%;
+	max-width: none;
+}
+
+.stats-page {
+	max-width: none;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.stats-table th,
+.stats-table td {
+	border-bottom: 1px solid #888;
+	padding: 0.2rem 0.4rem;
+	text-align: left;
+}
+
+.stats-table th:last-child,
+.stats-table td:last-child {
+	text-align: right;
+	width: 5rem;
+}
+
+.stats-table tbody tr:nth-child(odd) {
+	background-color: #ddd;
+}
+
+.chart-wrap {
+	width: 100%;
+	overflow-x: auto;
+	margin-bottom: 0.75rem;
+}
+
+.bar-chart {
+	width: 100%;
+	height: auto;
+	display: block;
+	min-width: 30rem;
+}
+
+.release-year-chart {
+	min-width: 50rem;
+}
+
+.platform-chart {
+	min-width: 36rem;
+}
+
+.bar-chart .axis {
+	stroke: #222;
+	stroke-width: 1;
+}
+
+.bar-chart .bar {
+	fill: #4f81bd;
+}
+
+.bar-chart .bar:hover {
+	fill: #3a6698;
+}
+
+.release-year-chart .bar-base {
+	fill: #4f81bd;
+}
+
+.release-year-chart .bar-base:hover {
+	fill: #3a6698;
+}
+
+.release-year-chart .bar-gold {
+	fill: #f9c74f;
+}
+
+.release-year-chart .bar-gold:hover {
+	fill: #e6b63a;
+}
+
+.bar-chart text {
+	fill: #111;
+	font-size: 11px;
+	font-family: sans-serif;
+}
+
+.chart-tooltip {
+	position: fixed;
+	pointer-events: none;
+	background: rgba(20, 20, 20, 0.95);
+	color: #fff;
+	padding: 0.2rem 0.45rem;
+	border-radius: 3px;
+	font-size: 0.85rem;
+	line-height: 1.2;
+	z-index: 9999;
+	opacity: 0;
+	transform: translateY(2px);
+	transition: opacity 0.05s linear;
+	white-space: nowrap;
+}
+
+.chart-tooltip.visible {
+	opacity: 1;
+	transform: translateY(0);
+}

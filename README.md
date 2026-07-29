@@ -10,4 +10,4 @@ Live site: https://plantmonster.net/games-played/
 	* Nested quotes have to be escaped with `\'` as in `"This is a \'review\'"` because damn if I care
 	* Commas that are not delimiters have to be escaped with `","`
 * Run `python3 parse.py`
-* The output is in `games-played.html`
+* The output is in `games-played.html` and `statistics.html`
