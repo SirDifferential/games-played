@@ -78,19 +78,13 @@ def countByGenre(gameData):
 	return sorted(counter.items(), key=lambda x: (-x[1], x[0].lower()))
 
 
-def buildStorePalette(gameData, maxStores=8):
+def buildStorePalette(gameData):
 	storeCounts = Counter()
 	for entry in gameData:
 		storeCounts[normalizeStore(entry.get('Service'))] += 1
 
 	sortedStores = sorted(storeCounts.items(), key=lambda x: (-x[1], x[0].lower()))
-	selectedStores = [name for name, _ in sortedStores[:maxStores]]
-	otherBucketLabel = 'Other'
-	if otherBucketLabel in storeCounts:
-		otherBucketLabel = 'Other (rest)'
-
-	if len(sortedStores) > maxStores:
-		selectedStores.append(otherBucketLabel)
+	selectedStores = [name for name, _ in sortedStores]
 
 	palette = [
 		'#4f81bd',
@@ -109,7 +103,7 @@ def buildStorePalette(gameData, maxStores=8):
 	for index, store in enumerate(selectedStores):
 		colors[store] = palette[index % len(palette)]
 
-	return selectedStores, colors, otherBucketLabel
+	return selectedStores, colors, None
 
 
 def buildPlatformPalette(gameData, maxPlatforms=8):
@@ -186,20 +180,51 @@ def buildLegend(items, colorMap, ariaLabel, imageMap=None):
 
 def storeLogoAssets(storeOrder):
 	storeToLogo = {
-		'GOG': 'graphics/GOG.com_logo.svg',
+		'GOG': 'graphics/GOG.com_logo.png',
+		'Free': 'graphics/gift.png',
+		'Humble Bundle': 'graphics/humble-bundle-icon.png',
+		'itch.io': 'graphics/itch.svg',
+		'Kickstarter': 'graphics/kickstarter.png',
+		'Retail': 'graphics/disk.png',
+		'Shareware': 'graphics/money-bags.png',
 		'Steam': 'graphics/Steam_icon_logo.svg'
 	}
+	fallbackLogo = 'graphics/circle-question-mark.svg'
 
 	barLogos = {}
 	legendImages = {}
 
 	for store in storeOrder:
-		logoPath = storeToLogo.get(store)
-		if logoPath is None:
-			continue
+		logoPath = storeToLogo.get(store, fallbackLogo)
 
 		barLogos[store] = logoPath
 		legendImages[store] = logoPath
+
+	return barLogos, legendImages
+
+
+def platformLogoAssets(platformOrder):
+	platformToLogo = {
+		'Windows': 'graphics/Windows_Logo_(1992-2001).svg.webp',
+		'Amiga': 'graphics/Commodore_Amiga_logo-03.svg',
+		'Linux': 'graphics/Tux.svg.webp',
+		'DOS': 'graphics/Msdos-icon.svg.webp',
+		'SCUMMVM': 'graphics/ScummVM__Modern_Remastered__Logo.svg.webp',
+		'NES': 'graphics/NES_logo.svg',
+		'Sega Megadrive': 'graphics/SEGA_logo.svg.webp',
+		'Commodore 64': 'graphics/Commodore_64.svg.webp'
+	}
+
+	barLogos = {}
+	legendImages = {}
+
+	for platform in platformOrder:
+		logoPath = platformToLogo.get(platform)
+		if logoPath is None:
+			continue
+
+		barLogos[platform] = logoPath
+		legendImages[platform] = logoPath
 
 	return barLogos, legendImages
 
@@ -507,7 +532,7 @@ def yearlyGoldChart(gameData, orderMode):
 	)
 
 
-def yearlySystemsChart(gameData, orderMode, platformOrder, platformColors):
+def yearlySystemsChart(gameData, orderMode, platformOrder, platformColors, platformBarLogos):
 	labelPrefix = orderMode + ' year'
 	return buildStackedYearChart(
 		gameData,
@@ -520,7 +545,7 @@ def yearlySystemsChart(gameData, orderMode, platformOrder, platformColors):
 		'No ' + labelPrefix + ' data available.',
 		yearDisplayOverrides(orderMode),
 		'Other',
-		None,
+		platformBarLogos,
 		'systems-' + orderMode
 	)
 
@@ -639,7 +664,8 @@ platformRows = statisticsRows(countByPlatform(gameData))
 genreRows = statisticsRows(countByGenre(gameData))
 
 platformOrder, platformColors = buildPlatformPalette(gameData)
-platformLegend = buildLegend(platformOrder, platformColors, 'Platform colors')
+platformBarLogos, platformLegendImages = platformLogoAssets(platformOrder)
+platformLegend = buildLegend(platformOrder, platformColors, 'Platform colors', platformLegendImages)
 storeOrder, storeColors, storeOtherBucketLabel = buildStorePalette(gameData)
 storeBarLogos, storeLegendImages = storeLogoAssets(storeOrder)
 storeLegend = buildLegend(storeOrder, storeColors, 'Store colors', storeLegendImages)
@@ -648,13 +674,13 @@ genreOrder, genreColors = buildGenrePalette(gameData)
 chartsByOrderAndMode = {
 	'release': {
 		'gold': yearlyGoldChart(gameData, 'release'),
-		'systems': yearlySystemsChart(gameData, 'release', platformOrder, platformColors),
+		'systems': yearlySystemsChart(gameData, 'release', platformOrder, platformColors, platformBarLogos),
 		'store': yearlyStoreChart(gameData, 'release', storeOrder, storeColors, storeOtherBucketLabel, storeBarLogos),
 		'genres': yearlyGenresChart(gameData, 'release', genreOrder, genreColors)
 	},
 	'played': {
 		'gold': yearlyGoldChart(gameData, 'played'),
-		'systems': yearlySystemsChart(gameData, 'played', platformOrder, platformColors),
+		'systems': yearlySystemsChart(gameData, 'played', platformOrder, platformColors, platformBarLogos),
 		'store': yearlyStoreChart(gameData, 'played', storeOrder, storeColors, storeOtherBucketLabel, storeBarLogos),
 		'genres': yearlyGenresChart(gameData, 'played', genreOrder, genreColors)
 	}
