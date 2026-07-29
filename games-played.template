@@ -17,8 +17,8 @@
 			<h1>Games played</h1>
 			<p>This is a list of games I have played / remember playing.</p>
 			<p>There are <b>REPLACE_GAME_COUNT</b> games on this list.</p>
-            <p>The source code for this tool is available <a href="https://github.com/SirDifferential/games-played">on github</a>.</p>
-            <p>If you are interested in the other things I do, they are on <a href="https://jessekaukonen.net">my main website</a>.</p>
+	            <p>The source code for this tool is available <a href="https://github.com/SirDifferential/games-played" target="_blank" rel="noopener noreferrer">on github</a>.</p>
+	            <p>If you are interested in the other things I do, they are on <a href="https://jessekaukonen.net" target="_blank" rel="noopener noreferrer">my main website</a>.</p>
 			<p>The finished date is often an approximate for older games that I added long after the fact.</p>
 			<p>Games I consider some of the best games of all time are marked in <span class="gold">gold</span>.</p>
 			<h3>My approach to reviewing games</h3>
