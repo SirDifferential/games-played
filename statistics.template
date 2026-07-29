@@ -21,6 +21,10 @@
 				<div class="chart-wrap">
 					REPLACE_YEARLY_DYNAMIC
 				</div>
+				<h3>Played year × genre heatmap</h3>
+				<div class="chart-wrap">
+					REPLACE_PLAYED_GENRE_HEATMAP
+				</div>
 				<h3>Summary tables</h3>
 				<h4>By platform</h4>
 				<table class="stats-table">

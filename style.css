@@ -140,6 +140,39 @@
 	min-width: 0;
 }
 
+.played-genre-heatmap {
+	width: 100%;
+	height: auto;
+	display: block;
+	min-width: 900px;
+}
+
+.played-genre-heatmap .heatmap-axis-label {
+	fill: #111;
+	font-size: 11px;
+	font-family: sans-serif;
+	font-weight: 600;
+}
+
+.played-genre-heatmap .heatmap-year-label,
+.played-genre-heatmap .heatmap-genre-label,
+.played-genre-heatmap .heatmap-legend-label,
+.played-genre-heatmap .heatmap-legend-tick {
+	fill: #111;
+	font-size: 9px;
+	font-family: sans-serif;
+}
+
+.played-genre-heatmap .heatmap-legend-label {
+	font-size: 10px;
+	font-weight: 600;
+}
+
+.played-genre-heatmap .heatmap-cell {
+	stroke: rgba(0, 0, 0, 0.2);
+	stroke-width: 0.35;
+}
+
 .release-year-chart {
 	min-width: 0;
 }

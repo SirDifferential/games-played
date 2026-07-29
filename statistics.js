@@ -1,6 +1,7 @@
 'use strict';
 
 window.addEventListener('load', function () {
+  var tooltipTargets = document.querySelectorAll('.bar-chart .bar[data-tooltip], .played-genre-heatmap .heatmap-cell[data-tooltip]');
   var bars = document.querySelectorAll('.bar-chart .bar[data-tooltip]');
   var tooltip = document.createElement('div');
   tooltip.className = 'chart-tooltip';
@@ -163,12 +164,15 @@ window.addEventListener('load', function () {
     }
   }
 
+  for (var targetIndex = 0; targetIndex < tooltipTargets.length; targetIndex++) {
+    tooltipTargets[targetIndex].addEventListener('mouseenter', showTooltip);
+    tooltipTargets[targetIndex].addEventListener('mousemove', moveTooltip);
+    tooltipTargets[targetIndex].addEventListener('mouseleave', maybeHideTooltip);
+    tooltipTargets[targetIndex].addEventListener('focus', showTooltip);
+    tooltipTargets[targetIndex].addEventListener('blur', maybeHideTooltip);
+  }
+
   for (var i = 0; i < bars.length; i++) {
-    bars[i].addEventListener('mouseenter', showTooltip);
-    bars[i].addEventListener('mousemove', moveTooltip);
-    bars[i].addEventListener('mouseleave', maybeHideTooltip);
-    bars[i].addEventListener('focus', showTooltip);
-    bars[i].addEventListener('blur', maybeHideTooltip);
     bars[i].addEventListener('click', togglePinnedTooltip);
     bars[i].addEventListener('keydown', onBarKeyDown);
   }

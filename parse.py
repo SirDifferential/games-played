@@ -619,6 +619,122 @@ def buildYearlyChartSwitcher(chartsByOrderAndMode, systemsLegend, storeLegend):
 	return out
 
 
+def playedYearGenreHeatmap(gameData):
+	if len(gameData) == 0:
+		return '<p>No played year data available.</p>'
+
+	countsByYearGenre = {}
+	yearCounts = Counter()
+	genreCounts = Counter()
+
+	for entry in gameData:
+		year = entry['Finished'].year
+		genre = normalizeGenre(entry.get('Genre'))
+
+		yearCounts[year] += 1
+		genreCounts[genre] += 1
+
+		if year not in countsByYearGenre:
+			countsByYearGenre[year] = Counter()
+		countsByYearGenre[year][genre] += 1
+
+	years = list(range(min(yearCounts.keys()), max(yearCounts.keys()) + 1))
+	genres = [name for name, _ in sorted(genreCounts.items(), key=lambda x: (-x[1], x[0].lower()))]
+
+	maxCellCount = 0
+	for year in years:
+		for genre in genres:
+			maxCellCount = max(maxCellCount, countsByYearGenre.get(year, Counter()).get(genre, 0))
+
+	if maxCellCount <= 0:
+		maxCellCount = 1
+	colorScaleMax = min(maxCellCount, 8)
+	if colorScaleMax <= 0:
+		colorScaleMax = 1
+
+	def cellColor(count):
+		if count <= 0:
+			return '#fff4ee'
+
+		ratio = min(count, colorScaleMax) / colorScaleMax
+		if ratio < 0.4:
+			local = ratio / 0.4
+			hue = int(6 + local * 16)
+			saturation = int(82 + local * 8)
+			lightness = int(93 - local * 35)
+			return 'hsl(' + str(hue) + ', ' + str(saturation) + '%, ' + str(lightness) + '%)'
+		if ratio < 0.75:
+			local = (ratio - 0.4) / 0.35
+			hue = int(22 + local * 18)
+			saturation = int(90 + local * 6)
+			lightness = int(58 - local * 18)
+			return 'hsl(' + str(hue) + ', ' + str(saturation) + '%, ' + str(lightness) + '%)'
+
+		local = (ratio - 0.75) / 0.25
+		hue = int(40 + local * 14)
+		saturation = int(96 - local * 6)
+		lightness = int(40 + local * 18)
+		return 'hsl(' + str(hue) + ', ' + str(saturation) + '%, ' + str(lightness) + '%)'
+
+	cellSize = 12
+	cellGap = 2
+	rowHeight = cellSize + cellGap
+	columnWidth = cellSize + cellGap
+	leftPad = max(56, min(170, max([len(name) for name in genres]) * 5 + 6))
+	topPad = 76
+	rightPad = 20
+	bottomPad = 18
+
+	gridWidth = len(years) * columnWidth - cellGap
+	gridHeight = len(genres) * rowHeight - cellGap
+
+	svgWidth = leftPad + gridWidth + rightPad
+	svgHeight = topPad + gridHeight + bottomPad
+
+	out = ''
+	out += '<svg class="played-genre-heatmap" viewBox="0 0 ' + str(svgWidth) + ' ' + str(svgHeight) + '" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Heatmap of played genres by year">\n'
+	out += '<rect x="0" y="0" width="' + str(svgWidth) + '" height="' + str(svgHeight) + '" fill="#fff"></rect>\n'
+
+	for yearIndex, year in enumerate(years):
+		x = leftPad + yearIndex * columnWidth + int(cellSize / 2)
+		if yearIndex == 0 or year == years[-1] or year % 2 == 0:
+			labelY = topPad - 10
+			out += '<text class="heatmap-year-label" x="' + str(x) + '" y="' + str(labelY) + '" text-anchor="start" transform="rotate(-50 ' + str(x) + ' ' + str(labelY) + ')">' + str(year) + '</text>\n'
+
+	for genreIndex, genre in enumerate(genres):
+		y = topPad + genreIndex * rowHeight
+		out += '<text class="heatmap-genre-label" x="' + str(leftPad - 8) + '" y="' + str(y + 9) + '" text-anchor="end">' + escape(genre) + '</text>\n'
+
+		for yearIndex, year in enumerate(years):
+			x = leftPad + yearIndex * columnWidth
+			count = countsByYearGenre.get(year, Counter()).get(genre, 0)
+			tooltip = str(year) + ' - ' + genre + ': ' + str(count)
+			if count == 1:
+				tooltip += ' game'
+			else:
+				tooltip += ' games'
+
+			out += '<rect class="heatmap-cell" x="' + str(x) + '" y="' + str(y) + '" width="' + str(cellSize) + '" height="' + str(cellSize) + '" fill="' + cellColor(count) + '" data-tooltip="' + escape(tooltip, quote=True) + '" tabindex="0"></rect>\n'
+
+	legendX = leftPad
+	legendY = 20
+	legendSteps = 5
+	legendCellWidth = 24
+
+	out += '<text class="heatmap-legend-label" x="' + str(legendX) + '" y="' + str(legendY - 9) + '" text-anchor="start">Games per year/genre cell</text>\n'
+	for step in range(legendSteps):
+		if legendSteps == 1:
+			value = 0
+		else:
+			value = int(round((step / (legendSteps - 1)) * colorScaleMax))
+		x = legendX + step * (legendCellWidth + 4)
+		out += '<rect class="heatmap-cell" x="' + str(x) + '" y="' + str(legendY) + '" width="' + str(legendCellWidth) + '" height="10" fill="' + cellColor(value) + '"></rect>\n'
+		out += '<text class="heatmap-legend-tick" x="' + str(x) + '" y="' + str(legendY + 24) + '" text-anchor="start">' + str(value) + '</text>\n'
+
+	out += '</svg>'
+	return out
+
+
 def statisticsRows(items):
 	out = ''
 	for key, count in items:
@@ -687,6 +803,7 @@ chartsByOrderAndMode = {
 	}
 }
 yearlyChartSwitcher = buildYearlyChartSwitcher(chartsByOrderAndMode, platformLegend, storeLegend)
+playedGenreHeatmap = playedYearGenreHeatmap(gameData)
 
 fin = open('statistics.template', 'r')
 statisticsTemplate = fin.read()
@@ -696,6 +813,7 @@ statisticsHtml = (
 	statisticsTemplate
 	.replace('REPLACE_PLATFORM_ROWS', platformRows)
 	.replace('REPLACE_YEARLY_DYNAMIC', yearlyChartSwitcher)
+	.replace('REPLACE_PLAYED_GENRE_HEATMAP', playedGenreHeatmap)
 	.replace('REPLACE_GENRE_ROWS', genreRows)
 )
 
