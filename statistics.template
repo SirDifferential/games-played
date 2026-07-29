@@ -10,12 +10,16 @@
 		<div class="centered stats-page">
 		<div>
 			<h1>Game statistics</h1>
-			<p>Aggregated statistics from the games list.</p>
+			<p>Various statistics about the games I've played, because statistics are fun.</p>
 		</div>
 		<div id ="controls">
 			<a class="nav-button" href="games-played.html">Back to main list</a>
 		</div>
 			<div class="table-wrap">
+				<h3>By release year</h3>
+				<div class="chart-wrap">
+					REPLACE_RELEASE_YEAR_CHART
+				</div>
 				<h3>By platform</h3>
 				<table class="stats-table">
 					<thead>
@@ -28,10 +32,6 @@
 						REPLACE_PLATFORM_ROWS
 					</tbody>
 				</table>
-				<h3>By release year</h3>
-				<div class="chart-wrap">
-					REPLACE_RELEASE_YEAR_CHART
-				</div>
 				<h3>By genre</h3>
 			<table class="stats-table">
 				<thead>
